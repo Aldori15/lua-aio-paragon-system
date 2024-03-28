@@ -24,7 +24,7 @@
 
 - Copy the lua_scripts/D3_Paragon folder to the lua_scripts folder on your server
 - Copy the Interface folder into a .MPQ patch in your Client's data folder
-- Next, configure the "paragon-server.lua" script by going to Line 27, then replace 'ac_eluna' with whatever database name you created.
+- Next, configure the "paragon-server.lua" script by going to Line 11, then replace 'ac_eluna' with whatever database name you created.
 - From the worldserver prompt type .reload eluna
 
 Thanks to @Naruon for the tutorial ;)
