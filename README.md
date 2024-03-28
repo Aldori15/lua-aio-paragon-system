@@ -32,7 +32,7 @@ Thanks to @Naruon for the tutorial ;)
 
 ## Credits
 
-* [iThorgrim](https://github.com/iThorgrim-Hub)
+* [iThorgrim](https://github.com/DevCores/lua-aio-parangon)
 * [Open-Wow](https://open-wow.eu)
 
 AzerothCore: [repository](https://github.com/azerothcore) - [website](http://azerothcore.org/) - [discord chat community](https://discord.gg/PaqQRkd)
