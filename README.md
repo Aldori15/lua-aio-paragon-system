@@ -13,12 +13,10 @@
 
   	To change the parameters you just have to open the script.
 
-    Repository: https://github.com/iThorgrim-Hub/lua-aio-parangon
-    Download: https://github.com/iThorgrim-Hub/lua-aio-parangon/archive/master.zip
     License: AGPL
 
 
-# Usage
+# Setup
 
 - Download the AIO Addon from https://rochet2.github.io/AIO.html
 - Copy the AIO_Client to your WoW_Client_folder/Interface/AddOns/
