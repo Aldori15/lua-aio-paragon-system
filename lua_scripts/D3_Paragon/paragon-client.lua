@@ -37,7 +37,7 @@ parangon.mainWindow = CreateFrame("Frame", parangon.mainWindow, UIParent)
 
 parangon.mainWindowTexture = parangon.mainWindow:CreateTexture()
   parangon.mainWindowTexture:SetAllPoints(parangon.mainWindow)
-  parangon.mainWindowTexture:SetTexture("interface/D3_Parangon/parangon/parangon_frame")
+  parangon.mainWindowTexture:SetTexture("interface/D3_Paragon/parangon/parangon_frame")
   parangon.mainWindowTexture:SetTexCoord(0.58154296875, 0.96435546875, 0.04052734375, 0.81201171875)
 
 parangon.mainTitle = CreateFrame("Frame", parangon.mainTitle, parangon.mainWindow)
@@ -47,7 +47,7 @@ parangon.mainTitle = CreateFrame("Frame", parangon.mainTitle, parangon.mainWindo
 
 parangon.mainTitleTexture = parangon.mainWindow:CreateTexture()
   parangon.mainTitleTexture:SetAllPoints(parangon.mainTitle)
-  parangon.mainTitleTexture:SetTexture("interface/D3_Parangon/parangon/parangon_frame")
+  parangon.mainTitleTexture:SetTexture("interface/D3_Paragon/parangon/parangon_frame")
   parangon.mainTitleTexture:SetParent(parangon.mainTitle)
   parangon.mainTitleTexture:SetTexCoord(0.23486328125, 0.48779296875, 0.33251953125, 0.40966796875)
 
@@ -55,7 +55,7 @@ parangon.mainTitleText = parangon.mainTitle:CreateFontString(parangon.mainTitleT
   parangon.mainTitleText:SetFont("Fonts\\FRIZQT__.TTF", 13)
   parangon.mainTitleText:SetSize(190, 5)
   parangon.mainTitleText:SetPoint("CENTER", 0, 3)
-  parangon.mainTitleText:SetText("|CFF000000Parangon|r")
+  parangon.mainTitleText:SetText("|CFF000000Paragon|r")
 
 parangon.mainWindowArt = CreateFrame("Button", parangon.mainWindowArt, parangon.mainWindow)
   parangon.mainWindowArt:SetSize(140, 100)
@@ -66,7 +66,7 @@ parangon.mainWindowArt = CreateFrame("Button", parangon.mainWindowArt, parangon.
 
 parangon.mainWindowArtTexture = parangon.mainWindowArt:CreateTexture()
   parangon.mainWindowArtTexture:SetAllPoints(parangon.mainWindowArt)
-  parangon.mainWindowArtTexture:SetTexture("interface/D3_Parangon/parangon/parangon_frame")
+  parangon.mainWindowArtTexture:SetTexture("interface/D3_Paragon/parangon/parangon_frame")
   parangon.mainWindowArtTexture:SetTexCoord(0.00048828125, 0.35009765625, 0.00048828125, 0.21435546875)
 
 parangon.levelWindow = CreateFrame("Frame", parangon.levelWindow, parangon.mainWindow)
@@ -76,7 +76,7 @@ parangon.levelWindow = CreateFrame("Frame", parangon.levelWindow, parangon.mainW
 
 parangon.levelWindowTexture = parangon.levelWindow:CreateTexture()
   parangon.levelWindowTexture:SetAllPoints(parangon.levelWindow)
-  parangon.levelWindowTexture:SetTexture("interface/D3_Parangon/parangon/parangon_frame")
+  parangon.levelWindowTexture:SetTexture("interface/D3_Paragon/parangon/parangon_frame")
   parangon.levelWindowTexture:SetTexCoord(0.05419921875, 0.17431640625, 0.31201171875, 0.42724609375)
 
 parangon.levelText = parangon.levelWindow:CreateFontString(parangon.levelText)
@@ -95,7 +95,7 @@ parangon.closeButton = CreateFrame("Button", parangon.closeButton, parangon.main
 parangon.expIcon = CreateFrame("Frame", parangon.expIcon, parangon.mainWindow)
   parangon.expIcon:SetSize(39, 39)
   parangon.expIcon:SetBackdrop({
-    bgFile = "Interface/D3_Parangon/Icons/garr_currencyicon-xp",
+    bgFile = "Interface/D3_Paragon/Icons/garr_currencyicon-xp",
     insets = { left = 0, right = 0, top = 0, bottom = 0 }
   })
   parangon.expIcon:SetPoint("TOP", 0, -115)
@@ -145,13 +145,13 @@ for id, subtable in pairs(parangon.spellsList) do
 
   parangon.leftButtonsTexture[id] = parangon.leftButtons[id]:CreateTexture()
     parangon.leftButtonsTexture[id]:SetAllPoints(parangon.leftButtons[id])
-    parangon.leftButtonsTexture[id]:SetTexture("Interface/D3_Parangon/parangon/ButtonBorder")
+    parangon.leftButtonsTexture[id]:SetTexture("Interface/D3_Paragon/parangon/ButtonBorder")
 
   parangon.leftButtonsArt[id] = CreateFrame("Frame", parangon.leftButtonsArt[id], parangon.leftButtons[id], nil)
   parangon.leftButtonsArt[id]:SetSize(35, 35)
   parangon.leftButtonsArt[id]:SetBackdrop(
     {
-      bgFile = "Interface/D3_Parangon/Icons/"..subtable.icon,
+      bgFile = "Interface/D3_Paragon/Icons/"..subtable.icon,
       insets = {left = 0, right = 0, top = 0, bottom = 0}
     }
   )
@@ -161,9 +161,9 @@ for id, subtable in pairs(parangon.spellsList) do
   parangon.centerButtons[id] = CreateFrame("Button", parangon.centerButtons[id], parangon.mainWindow, nil)
     parangon.centerButtons[id]:SetSize(170, 55)
     parangon.centerButtons[id]:SetPoint("CENTER", 0, parangon.buttonsCoords.global.pos_y)
-    parangon.centerButtons[id]:SetNormalTexture("Interface/D3_Parangon/Parangon/LargeButtonBorder")
-    parangon.centerButtons[id]:SetHighlightTexture("Interface/D3_Parangon/Parangon/LargeButtonBorder_Hover")
-    parangon.centerButtons[id]:SetPushedTexture("Interface/D3_Parangon/Parangon/LargeButtonBorder_Push")
+    parangon.centerButtons[id]:SetNormalTexture("Interface/D3_Paragon/Parangon/LargeButtonBorder")
+    parangon.centerButtons[id]:SetHighlightTexture("Interface/D3_Paragon/Parangon/LargeButtonBorder_Hover")
+    parangon.centerButtons[id]:SetPushedTexture("Interface/D3_Paragon/Parangon/LargeButtonBorder_Push")
     parangon.centerButtons[id]:EnableMouseWheel(1)
     parangon.centerButtons[id]:SetFrameLevel(3)
 
@@ -186,7 +186,7 @@ for id, subtable in pairs(parangon.spellsList) do
   end)
 
   parangon.centerText[id] = parangon.centerButtons[id]:CreateFontString(parangon.centerText[id])
-    parangon.centerText[id]:SetFont("Interface/D3_Parangon/Fonts/MARCELLUS.TTF", 14)
+    parangon.centerText[id]:SetFont("Interface/D3_Paragon/Fonts/MARCELLUS.TTF", 14)
     parangon.centerText[id]:SetSize(190, 3)
     parangon.centerText[id]:SetPoint("CENTER", -1, 1)
     parangon.centerText[id]:SetText("|CFFFFFFFF"..subtable.name.."|r")
@@ -208,7 +208,7 @@ for id, subtable in pairs(parangon.spellsList) do
 
   parangon.rightButtonsTexture[id] = parangon.rightButtons[id]:CreateTexture()
     parangon.rightButtonsTexture[id]:SetAllPoints(parangon.rightButtons[id])
-    parangon.rightButtonsTexture[id]:SetTexture("Interface/D3_Parangon/parangon/ButtonBorder")
+    parangon.rightButtonsTexture[id]:SetTexture("Interface/D3_Paragon/parangon/ButtonBorder")
 
   parangon.buttonsCoords.global.pos_y = parangon.buttonsCoords.global.pos_y - 60
 end
@@ -222,9 +222,9 @@ parangon.pointsLeft = parangon.mainWindow:CreateFontString(parangon.pointsLeft)
 
 parangon.saveButton = CreateFrame("Button", parangon.saveButton, parangon.mainWindow)
   parangon.saveButton:SetSize(150, 35)
-  parangon.saveButton:SetNormalTexture("Interface/D3_Parangon/buttons/ui-dialogbox-button-gold-up")
-  parangon.saveButton:SetHighlightTexture("Interface/D3_Parangon/buttons/ui-dialogbox-button-highlight")
-  parangon.saveButton:SetPushedTexture("Interface/D3_Parangon/buttons/ui-dialogbox-button-gold-down")
+  parangon.saveButton:SetNormalTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-gold-up")
+  parangon.saveButton:SetHighlightTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-highlight")
+  parangon.saveButton:SetPushedTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-gold-down")
   parangon.saveButton:SetPoint("BOTTOM", 0, 20)
   parangon.saveButton:SetFrameLevel(2)
 
@@ -263,9 +263,9 @@ parangon.characterFrameContainer = CreateFrame("Frame", parangon.characterFrameC
 
 parangon.characterFrameBorder = CreateFrame("Button", parangon.characterFrameBorder, parangon.characterFrameContainer)
   parangon.characterFrameBorder:SetSize(50, 50)
-  parangon.characterFrameBorder:SetNormalTexture("Interface/D3_Parangon/parangon/ButtonBorder")
-  parangon.characterFrameBorder:SetHighlightTexture("Interface/D3_Parangon/parangon/ButtonBorder_Hover")
-  parangon.characterFrameBorder:SetPushedTexture("Interface/D3_Parangon/parangon/ButtonBorder_Push")
+  parangon.characterFrameBorder:SetNormalTexture("Interface/D3_Paragon/parangon/ButtonBorder")
+  parangon.characterFrameBorder:SetHighlightTexture("Interface/D3_Paragon/parangon/ButtonBorder_Hover")
+  parangon.characterFrameBorder:SetPushedTexture("Interface/D3_Paragon/parangon/ButtonBorder_Push")
   parangon.characterFrameBorder:SetPoint("CENTER", 0, 0)
   parangon.characterFrameBorder:EnableMouseWheel(1)
   parangon.characterFrameBorder:SetFrameLevel(1000)
@@ -300,7 +300,7 @@ parangon.characterFrameBorder = CreateFrame("Button", parangon.characterFrameBor
 parangon.characterFrameBackground = CreateFrame("Frame", parangon.characterFrameBackground, parangon.characterFrameBorder)
   parangon.characterFrameBackground:SetSize(39, 39)
   parangon.characterFrameBackground:SetBackdrop({
-    bgFile = "Interface/D3_Parangon/Icons/_LDAKnowledge",
+    bgFile = "Interface/D3_Paragon/Icons/_LDAKnowledge",
     insets = { left = 0, right = 0, top = 0, bottom = 0 }
   })
   parangon.characterFrameBackground:SetPoint("CENTER", 0, 0)
