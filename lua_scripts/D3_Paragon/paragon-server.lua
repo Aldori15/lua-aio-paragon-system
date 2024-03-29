@@ -110,14 +110,14 @@ function paragon_addon.setStatsInformation(player, stat, value, flags)
           return false
         end
       else
-        -- Right click to remove points
+        -- Right click to refund points
         if (player:GetData('paragon_stats_'..stat) > 0) then
           player:SetData('paragon_stats_'..stat, (player:GetData('paragon_stats_'..stat) - value))
           player:SetData('paragon_points', (player:GetData('paragon_points') + value))
 
           player:SetData('paragon_points_spend', (player:GetData('paragon_points_spend') - value))
         else
-          player:SendNotification('You have no points to take out.')
+          player:SendNotification('You have no points to refund.')
           return false
         end
       end

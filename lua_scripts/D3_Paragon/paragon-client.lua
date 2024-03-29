@@ -231,7 +231,7 @@ paragon.saveButtonText = paragon.saveButton:CreateFontString(paragon.saveButtonT
   paragon.saveButtonText:SetShadowOffset(0.5, 0.5)
 
 
-  
+
 paragon.paragonCharacterButton = CreateFrame("Button", paragon.paragonCharacterButton, CharacterFrame)
   paragon.paragonCharacterButton:SetSize(90, 35)
   paragon.paragonCharacterButton:SetNormalTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-gold-up")
@@ -240,7 +240,7 @@ paragon.paragonCharacterButton = CreateFrame("Button", paragon.paragonCharacterB
   paragon.paragonCharacterButton:SetFrameStrata("DIALOG")
   paragon.paragonCharacterButton:SetFrameLevel(100)
   --[[ -Aldori note 
-    Not sure if universally we want the button to be anchored to the top center of the player frame
+    Not sure if we want the button to be anchored to the top center of the player frame universally
     for everyone, regardless of their UI setups (ElvUI vs. non-ElvUI) since ElvUI displays the 
     character frame differently.  We can either leave it as it with the button top center, or 
     possibly check if the player has ElvUI enabled, then use the "TOPLEFT", 17, -17" anchor point
