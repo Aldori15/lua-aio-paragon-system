@@ -11,8 +11,8 @@ local paragon = {}
 local paragon_addon = AIO.AddHandlers("AIO_Paragon", {})
 
 paragon.mainWindow = CreateFrame("Frame", paragon.mainWindow, UIParent)
-  --paragon.mainWindow:SetSize(300, 500)
-  paragon.mainWindow:SetSize(300, 540)
+  -- paragon.mainWindow:SetSize(300, 540)
+  paragon.mainWindow:SetSize(300, 590)
   paragon.mainWindow:SetMovable(false)
   paragon.mainWindow:EnableMouse(true)
   paragon.mainWindow:RegisterForDrag("Right_Button")
@@ -97,8 +97,8 @@ paragon.expText = paragon.mainWindow:CreateFontString(paragon.expText)
 
 paragon.buttonsCoords = {
   global = {
-    --pos_y = 50
-    pos_y = 70
+    -- pos_y = 70
+    pos_y = 100
   }
 }
 
@@ -120,6 +120,7 @@ paragon.spellsList = {
   [7477] = {name = 'Stamina', icon = '_D3mantraofretribution'},
   [7468] = {name = 'Intellect', icon = '_D3mantraofhealing'},
   [7474] = {name = 'Spirit', icon = '_D3mantraofevasion'},
+  [7511] = {name = 'Defense Rating', icon = '_D3mantraofretribution'},
 }
 
 for id, subtable in pairs(paragon.spellsList) do

@@ -27,6 +27,7 @@ local paragon = {
         [7477] = 'Stamina',
         [7468] = 'Intellect',
         [7474] = 'Spirit',
+        [7511] = 'Defense Rating',
     },
 }
 
@@ -73,7 +74,7 @@ end
 function paragon.onServerStart(event)
     CharDBExecute('CREATE DATABASE IF NOT EXISTS `'..paragon.config.db_name..'`;')
     CharDBExecute('CREATE TABLE IF NOT EXISTS `'..paragon.config.db_name..'`.`paragon_account` (`account_id` INT(11) NOT NULL, `level` INT(11) DEFAULT 1, `exp` INT(11) DEFAULT 0, PRIMARY KEY (`account_id`) );');
-    CharDBExecute('CREATE TABLE IF NOT EXISTS `'..paragon.config.db_name..'`.`paragon_characters` (`account_id` INT(11) NOT NULL, `guid` INT(11) NOT NULL, `strength` INT(11) DEFAULT 0, `agility` INT(11) DEFAULT 0, `stamina` INT(11) DEFAULT 0, `intellect` INT(11) DEFAULT 0, `spirit` INT(11) DEFAULT 0, PRIMARY KEY (`account_id`, `guid`));');
+    CharDBExecute('CREATE TABLE IF NOT EXISTS `'..paragon.config.db_name..'`.`paragon_characters` (`account_id` INT(11) NOT NULL, `guid` INT(11) NOT NULL, `strength` INT(11) DEFAULT 0, `agility` INT(11) DEFAULT 0, `stamina` INT(11) DEFAULT 0, `intellect` INT(11) DEFAULT 0, `spirit` INT(11) DEFAULT 0, `defense` INT(11) DEFAULT 0, PRIMARY KEY (`account_id`, `guid`));');
     io.write('Eluna :: paragon System start \n')
 end
 RegisterServerEvent(14, paragon.onServerStart)
@@ -130,24 +131,25 @@ function paragon_addon.setStatsInformation(player, stat, value, flags)
   end
 end
 
-function Player:setparagonInfo(strength, agility, stamina, intellect, spirit)
+function Player:setparagonInfo(strength, agility, stamina, intellect, spirit, defense)
   self:SetData('paragon_stats_7464', strength)
   self:SetData('paragon_stats_7471', agility)
   self:SetData('paragon_stats_7477', stamina)
   self:SetData('paragon_stats_7468', intellect)
   self:SetData('paragon_stats_7474', spirit)
+  self:SetData('paragon_stats_7511', defense)
 end
 
 function paragon.onLogin(event, player)
     local pAcc = player:GetAccountId()
-    local getparagonCharInfo = CharDBQuery('SELECT strength, agility, stamina, intellect, spirit FROM `'..paragon.config.db_name..'`.`paragon_characters` WHERE account_id = '..pAcc)
+    local getparagonCharInfo = CharDBQuery('SELECT strength, agility, stamina, intellect, spirit, defense FROM `'..paragon.config.db_name..'`.`paragon_characters` WHERE account_id = '..pAcc)
     if getparagonCharInfo then
-      player:setparagonInfo(getparagonCharInfo:GetUInt32(0), getparagonCharInfo:GetUInt32(1), getparagonCharInfo:GetUInt32(2), getparagonCharInfo:GetUInt32(3), getparagonCharInfo:GetUInt32(4))
-      player:SetData('paragon_points', getparagonCharInfo:GetUInt32(0) + getparagonCharInfo:GetUInt32(1) + getparagonCharInfo:GetUInt32(2) + getparagonCharInfo:GetUInt32(3) + getparagonCharInfo:GetUInt32(4))
+      player:setparagonInfo(getparagonCharInfo:GetUInt32(0), getparagonCharInfo:GetUInt32(1), getparagonCharInfo:GetUInt32(2), getparagonCharInfo:GetUInt32(3), getparagonCharInfo:GetUInt32(4), getparagonCharInfo:GetUInt32(5))
+      player:SetData('paragon_points', getparagonCharInfo:GetUInt32(0) + getparagonCharInfo:GetUInt32(1) + getparagonCharInfo:GetUInt32(2) + getparagonCharInfo:GetUInt32(3) + getparagonCharInfo:GetUInt32(4) + getparagonCharInfo:GetUInt32(5))
     else
       local pGuid = player:GetGUIDLow()
-      CharDBExecute('INSERT INTO `'..paragon.config.db_name..'`.`paragon_characters` VALUES ('..pAcc..', '..pGuid..', 0, 0, 0, 0, 0)')
-      player:setparagonInfo(0, 0, 0, 0, 0)
+      CharDBExecute('INSERT INTO `'..paragon.config.db_name..'`.`paragon_characters` VALUES ('..pAcc..', '..pGuid..', 0, 0, 0, 0, 0, 0)')
+      player:setparagonInfo(0, 0, 0, 0, 0, 0)
     end
     player:SetData('paragon_points_spend', 0)
 
@@ -184,8 +186,8 @@ RegisterServerEvent(33, paragon.getPlayers)
 function paragon.onLogout(event, player)
   local pAcc = player:GetAccountId()
   local pGuid = player:GetGUIDLow()
-  local strength, agility, stamina, intellect, spirit = player:GetData('paragon_stats_7464'), player:GetData('paragon_stats_7471'), player:GetData('paragon_stats_7477'), player:GetData('paragon_stats_7468'), player:GetData('paragon_stats_7474')
-  CharDBExecute('REPLACE INTO `'..paragon.config.db_name..'`.`paragon_characters` VALUES ('..pAcc..', '..pGuid..', '..strength..', '..agility..', '..stamina..', '..intellect..', '..spirit..')')
+  local strength, agility, stamina, intellect, spirit, defense = player:GetData('paragon_stats_7464'), player:GetData('paragon_stats_7471'), player:GetData('paragon_stats_7477'), player:GetData('paragon_stats_7468'), player:GetData('paragon_stats_7474'), player:GetData('paragon_stats_7511')
+  CharDBExecute('REPLACE INTO `'..paragon.config.db_name..'`.`paragon_characters` VALUES ('..pAcc..', '..pGuid..', '..strength..', '..agility..', '..stamina..', '..intellect..', '..spirit..', '..defense..')')
 
   if not paragon.account[pAcc] then
     paragon.account[pAcc] = {
