@@ -12,11 +12,13 @@ local paragon = {}
 local paragon_addon = AIO.AddHandlers("AIO_Paragon", {})
 
 paragon.mainWindow = CreateFrame("Frame", paragon.mainWindow, UIParent)
-  paragon.mainWindow:SetSize(300, 500)
+  --paragon.mainWindow:SetSize(300, 500)
+  paragon.mainWindow:SetSize(300, 540)
   paragon.mainWindow:SetMovable(false)
   paragon.mainWindow:EnableMouse(true)
   paragon.mainWindow:RegisterForDrag("Right_Button")
-  paragon.mainWindow:SetPoint("CENTER", 0, 50)
+  --paragon.mainWindow:SetPoint("CENTER", 0, 50)
+  paragon.mainWindow:SetPoint("CENTER", 0, 150)
   paragon.mainWindow:Hide()
 
 paragon.mainWindowTexture = paragon.mainWindow:CreateTexture()
@@ -36,7 +38,7 @@ paragon.mainTitleTexture = paragon.mainWindow:CreateTexture()
   paragon.mainTitleTexture:SetTexCoord(0.23486328125, 0.48779296875, 0.33251953125, 0.40966796875)
 
 paragon.mainTitleText = paragon.mainTitle:CreateFontString(paragon.mainTitleText)
-  paragon.mainTitleText:SetFont("Fonts\\FRIZQT__.TTF", 13)
+  paragon.mainTitleText:SetFont("Fonts\\FRIZQT__.TTF", 14)
   paragon.mainTitleText:SetSize(190, 5)
   paragon.mainTitleText:SetPoint("CENTER", 0, 3)
   paragon.mainTitleText:SetText("|CFF000000Paragon|r")
@@ -96,7 +98,8 @@ paragon.expText = paragon.mainWindow:CreateFontString(paragon.expText)
 
 paragon.buttonsCoords = {
   global = {
-    pos_y = 50
+    --pos_y = 50
+    pos_y = 70
   }
 }
 
@@ -117,7 +120,7 @@ paragon.spellsList = {
   [7471] = {name = 'Agility', icon = '_D3mantraofevasion'},
   [7477] = {name = 'Stamina', icon = '_D3mantraofretribution'},
   [7468] = {name = 'Intellect', icon = '_D3mantraofhealing'},
-  [7474] = {name = 'Spirit', icon = '_D3mantraofretribution'},
+  [7474] = {name = 'Spirit', icon = '_D3mantraofevasion'},
 }
 
 for id, subtable in pairs(paragon.spellsList) do
@@ -194,7 +197,8 @@ for id, subtable in pairs(paragon.spellsList) do
     paragon.rightButtonsTexture[id]:SetAllPoints(paragon.rightButtons[id])
     paragon.rightButtonsTexture[id]:SetTexture("Interface/D3_Paragon/paragon/ButtonBorder")
 
-  paragon.buttonsCoords.global.pos_y = paragon.buttonsCoords.global.pos_y - 60
+  --paragon.buttonsCoords.global.pos_y = paragon.buttonsCoords.global.pos_y - 60
+  paragon.buttonsCoords.global.pos_y = paragon.buttonsCoords.global.pos_y - 55
 end
 
 paragon.pointsLeft = paragon.mainWindow:CreateFontString(paragon.pointsLeft)
@@ -223,57 +227,58 @@ paragon.saveButtonText = paragon.saveButton:CreateFontString(paragon.saveButtonT
   paragon.saveButtonText:SetFont("Fonts/FRIZQT__.TTF", 12)
   paragon.saveButtonText:SetSize(180, 3)
   paragon.saveButtonText:SetPoint("CENTER", 0, 6)
-  paragon.saveButtonText:SetText("|CFFFFFFFFAccept changes|r")
+  paragon.saveButtonText:SetText("|CFFFFFFFFAccept Changes|r")
   paragon.saveButtonText:SetShadowColor(0, 0, 0)
   paragon.saveButtonText:SetShadowOffset(0.5, 0.5)
 
-paragon.characterFrameContainer = CreateFrame("Frame", paragon.characterFrameContainer, CharacterFrame);
-  paragon.characterFrameContainer:SetSize(55, 55)
-  paragon.characterFrameContainer:RegisterForDrag("LeftButton")
-  paragon.characterFrameContainer:SetPoint("TOP", 181, -32)
-  paragon.characterFrameContainer:SetBackdrop({
-    bgFile = "Interface/bankframe/bank-background",
-    edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
-    edgeSize = 20,
-    insets = { left = 5, right = 5, top = 5, bottom = 5 }
-  })
-  paragon.characterFrameContainer:SetFrameLevel(5)
-  paragon.characterFrameContainer:SetMovable(false)
-  paragon.characterFrameContainer:EnableMouse(true)
-  paragon.characterFrameContainer:SetClampedToScreen(true)
-  paragon.characterFrameContainer:SetScript("OnDragStart", paragon.characterFrameContainer.StartMoving)
-  paragon.characterFrameContainer:SetScript("OnHide", paragon.characterFrameContainer.StopMovingOrSizing)
-  paragon.characterFrameContainer:SetScript("OnDragStop", paragon.characterFrameContainer.StopMovingOrSizing)
-
-paragon.characterFrameBorder = CreateFrame("Button", paragon.characterFrameBorder, paragon.characterFrameContainer)
-  paragon.characterFrameBorder:SetSize(50, 50)
-  paragon.characterFrameBorder:SetNormalTexture("Interface/D3_Paragon/paragon/ButtonBorder")
-  paragon.characterFrameBorder:SetHighlightTexture("Interface/D3_Paragon/paragon/ButtonBorder_Hover")
-  paragon.characterFrameBorder:SetPushedTexture("Interface/D3_Paragon/paragon/ButtonBorder_Push")
-  paragon.characterFrameBorder:SetPoint("CENTER", 0, 0)
-  paragon.characterFrameBorder:EnableMouseWheel(1)
-  paragon.characterFrameBorder:SetFrameLevel(1000)
-  paragon.characterFrameBorder:SetFrameLevel(7)
 
 
-  paragon.characterFrameBorder:SetScript("OnEnter", function(self, button, down)
-    GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR", 1, 5)
-    GameTooltip:AddLine("Paragon Infos", 1, 1, 1)
-    GameTooltip:AddLine("Displays/hides the Paragon points allocation window.\n"..paragon.pointsLeft:GetText().."\n")
+
+
+
+
+
+
+
+paragon.paragonCharacterButton = CreateFrame("Button", paragon.paragonCharacterButton, CharacterFrame)
+  -- paragon.paragonCharacterButton:SetSize(150, 35)
+  paragon.paragonCharacterButton:SetSize(90, 35)
+  paragon.paragonCharacterButton:SetNormalTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-gold-up")
+  paragon.paragonCharacterButton:SetHighlightTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-highlight")
+  paragon.paragonCharacterButton:SetPushedTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-gold-down")
+  paragon.paragonCharacterButton:SetFrameStrata("DIALOG")
+  paragon.paragonCharacterButton:SetFrameLevel(100)
+  --[[ -Aldori note 
+    Not sure if universally we want the button to be anchored to the top center of the player frame
+    for everyone, regardless of their UI setups (ElvUI vs. non-ElvUI) since ElvUI displays the 
+    character frame differently.  We can either leave it as it with the button top center, or 
+    possibly check if the player has ElvUI enabled, then use the "TOPLEFT", 17, -17" anchor point
+    and if they don't have ElvUI enabled, then use the "TOP", 0, 12" anchor point.
+  --]]
+  paragon.paragonCharacterButton:SetPoint("TOP", 0, 12)
+  -- paragon.paragonCharacterButton:SetPoint("TOPLEFT", 17, -17)
+
+
+
+  paragon.paragonCharacterButton:SetScript("OnEnter", function(self, button, down)
+    --GameTooltip:SetOwner(UIParent, "ANCHOR_CURSOR", 1, 5)
+    GameTooltip:SetOwner(paragon.paragonCharacterButton, "ANCHOR_RIGHT", 12, 0)
+    GameTooltip:AddLine("Paragon Info", 1, 1, 1)
+    GameTooltip:AddLine("Toggles the Paragon points allocation window.\n"..paragon.pointsLeft:GetText().."\n")
 
     for spellid, subtable in pairs(paragon.spellsList) do
       GameTooltip:AddLine("|CFFFFFFFF+ "..paragon.rightText[spellid]:GetText().."|CFFFFFFFF "..subtable.name.."|r");
     end
-    GameTooltip:AddLine("\n|CFFFFFFFF"..paragon.expText:GetText().."|r");
+    GameTooltip:AddLine("\n|CFFFFFFFF"..paragon.expText:GetText().."|r ");
 
     GameTooltip:Show()
   end)
 
-  paragon.characterFrameBorder:SetScript("OnLeave", function (self, button, down)
+  paragon.paragonCharacterButton:SetScript("OnLeave", function (self, button, down)
     GameTooltip:Hide()
   end)
 
-  paragon.characterFrameBorder:SetScript("OnMouseUp", function (self, button, down)
+  paragon.paragonCharacterButton:SetScript("OnMouseUp", function (self, button, down)
     if(paragon.mainWindow:IsShown())then
       paragon.mainWindow:Hide()
     else
@@ -281,14 +286,94 @@ paragon.characterFrameBorder = CreateFrame("Button", paragon.characterFrameBorde
     end
   end)
 
-paragon.characterFrameBackground = CreateFrame("Frame", paragon.characterFrameBackground, paragon.characterFrameBorder)
-  paragon.characterFrameBackground:SetSize(39, 39)
-  paragon.characterFrameBackground:SetBackdrop({
-    bgFile = "Interface/D3_Paragon/Icons/_LDAKnowledge",
-    insets = { left = 0, right = 0, top = 0, bottom = 0 }
-  })
-  paragon.characterFrameBackground:SetPoint("CENTER", 0, 0)
-  paragon.characterFrameBackground:SetFrameLevel(6)
+
+paragon.paragonCharacterButtonText = paragon.paragonCharacterButton:CreateFontString(paragon.paragonCharacterButtonText)
+  paragon.paragonCharacterButtonText:SetFont("Fonts/FRIZQT__.TTF", 12)
+  paragon.paragonCharacterButtonText:SetSize(180, 3)
+  paragon.paragonCharacterButtonText:SetPoint("CENTER", 0, 6)
+  paragon.paragonCharacterButtonText:SetText("|CFFFFFFFFParagon|r")
+  paragon.paragonCharacterButtonText:SetShadowColor(0, 0, 0)
+  paragon.paragonCharacterButtonText:SetShadowOffset(0.5, 0.5)
+
+
+
+
+
+
+
+
+
+-- paragon.characterFrameContainer = CreateFrame("Frame", paragon.characterFrameContainer, CharacterFrame);
+--   --paragon.characterFrameContainer:SetSize(55, 55)
+--   paragon.characterFrameContainer:SetSize(45, 45)
+--   paragon.characterFrameContainer:RegisterForDrag("LeftButton")
+--   -- paragon.characterFrameContainer:SetPoint("TOP", 181, -32)
+--   paragon.characterFrameContainer:SetPoint("TOPLEFT", 17, -17)
+--   paragon.characterFrameContainer:SetBackdrop({
+--     bgFile = "Interface/bankframe/bank-background",
+--     edgeFile = "Interface/DialogFrame/UI-DialogBox-Border",
+--     edgeSize = 20,
+--     insets = { left = 5, right = 5, top = 5, bottom = 5 }
+--   })
+--   paragon.characterFrameContainer:SetFrameLevel(5)
+--   paragon.characterFrameContainer:SetMovable(false)
+--   paragon.characterFrameContainer:EnableMouse(true)
+--   paragon.characterFrameContainer:SetClampedToScreen(true)
+--   paragon.characterFrameContainer:SetScript("OnDragStart", paragon.characterFrameContainer.StartMoving)
+--   paragon.characterFrameContainer:SetScript("OnHide", paragon.characterFrameContainer.StopMovingOrSizing)
+--   paragon.characterFrameContainer:SetScript("OnDragStop", paragon.characterFrameContainer.StopMovingOrSizing)
+
+-- paragon.characterFrameBorder = CreateFrame("Button", paragon.characterFrameBorder, paragon.characterFrameContainer)
+-- --paragon.characterFrameBorder = CreateFrame("Button", paragon.characterFrameBorder, CharacterFrame)
+--   --paragon.characterFrameBorder:SetSize(50, 50)
+--   paragon.characterFrameBorder:SetSize(40, 40)
+--   paragon.characterFrameBorder:SetNormalTexture("Interface/D3_Paragon/paragon/ButtonBorder")
+--   paragon.characterFrameBorder:SetHighlightTexture("Interface/D3_Paragon/paragon/ButtonBorder_Hover")
+--   paragon.characterFrameBorder:SetPushedTexture("Interface/D3_Paragon/paragon/ButtonBorder_Push")
+--   paragon.characterFrameBorder:SetPoint("CENTER", 0, 0)
+--   paragon.characterFrameBorder:EnableMouseWheel(1)
+--   paragon.characterFrameBorder:SetFrameLevel(1000)
+--   paragon.characterFrameBorder:SetFrameLevel(7)
+
+
+--   paragon.characterFrameBorder:SetScript("OnEnter", function(self, button, down)
+--     -- GameTooltip:SetOwner(UIParent, "ANCHOR_RIGHT", 1, 5)
+--     GameTooltip:SetOwner(paragon.characterFrameBackground, "ANCHOR_RIGHT", 12, 0)
+
+--     GameTooltip:AddLine("Paragon Info", 1, 1, 1)
+--     GameTooltip:AddLine("Toggles the Paragon points allocation window.\n"..paragon.pointsLeft:GetText().."\n")
+
+--     for spellid, subtable in pairs(paragon.spellsList) do
+--       GameTooltip:AddLine("|CFFFFFFFF+ "..paragon.rightText[spellid]:GetText().."|CFFFFFFFF "..subtable.name.."|r");
+--     end
+--     GameTooltip:AddLine("\n|CFFFFFFFF"..paragon.expText:GetText().."|r ");
+
+--     GameTooltip:Show()
+--   end)
+
+--   paragon.characterFrameBorder:SetScript("OnLeave", function (self, button, down)
+--     GameTooltip:Hide()
+--   end)
+
+--   paragon.characterFrameBorder:SetScript("OnMouseUp", function (self, button, down)
+--     if(paragon.mainWindow:IsShown())then
+--       paragon.mainWindow:Hide()
+--     else
+--       paragon.mainWindow:Show()
+--     end
+--   end)
+
+-- paragon.characterFrameBackground = CreateFrame("Frame", paragon.characterFrameBackground, paragon.characterFrameBorder)
+--   --paragon.characterFrameBackground:SetSize(39, 39)
+--   paragon.characterFrameBackground:SetSize(29, 29)
+--   paragon.characterFrameBackground:SetBackdrop({
+--     bgFile = "Interface/D3_Paragon/Icons/_LDAKnowledge",
+--     insets = { left = 0, right = 0, top = 0, bottom = 0 }
+--   })
+--   paragon.characterFrameBackground:SetPoint("CENTER", 0, 0)
+--   paragon.characterFrameBackground:SetFrameLevel(6)
+
+
 
 function paragon_addon.setInfo(player, stats, level, points, exps)
   for statid, value in pairs(stats) do
@@ -296,7 +381,14 @@ function paragon_addon.setInfo(player, stats, level, points, exps)
   end
 
   paragon.levelText:SetText("|CFFFFFFFF" .. level)
-  paragon.pointsLeft:SetText("You still have |CFF00CE00" .. points .. "|r left to spend.")
+  if (points > 1) then
+    paragon.pointsLeft:SetText("You still have |CFF00CE00" .. points .. "|r points left to spend.")
+  elseif (points == 1) then
+    paragon.pointsLeft:SetText("You still have |CFF00CE00" .. points .. "|r point left to spend.")
+  else
+    --paragon.pointsLeft:SetText("You don't have any points left to spend.")
+    paragon.pointsLeft:SetText("You have |CFFCE0000" .. points .. "|r points left to spend.")
+  end
 
   paragon.expText:SetText("|CFFC758FE(".. exps.exp .. " / " .. exps.exp_max .. ")")
 end

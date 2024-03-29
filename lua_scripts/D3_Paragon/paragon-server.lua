@@ -100,16 +100,18 @@ function paragon_addon.setStatsInformation(player, stat, value, flags)
     local pLevel = player:GetLevel()
     if (pLevel >= paragon.config.minLevel) then
       if flags then
+        -- Left click to add points
         if ((player:GetData('paragon_points') - value) >= 0) then
           player:SetData('paragon_stats_'..stat, (player:GetData('paragon_stats_'..stat) + value))
           player:SetData('paragon_points', (player:GetData('paragon_points') - value))
 
           player:SetData('paragon_points_spend', (player:GetData('paragon_points_spend') + value))
         else
-          player:SendNotification('You have no more points to award.')
+          player:SendNotification('You have no more points to spend.')
           return false
         end
       else
+        -- Right click to remove points
         if (player:GetData('paragon_stats_'..stat) > 0) then
           player:SetData('paragon_stats_'..stat, (player:GetData('paragon_stats_'..stat) - value))
           player:SetData('paragon_points', (player:GetData('paragon_points') + value))
