@@ -278,7 +278,7 @@ paragon.paragonCharacterButton = CreateFrame("Button", paragon.paragonCharacterB
 
 
 paragon.paragonCharacterButtonText = paragon.paragonCharacterButton:CreateFontString(paragon.paragonCharacterButtonText)
-  paragon.paragonCharacterButtonText:SetFont("Fonts/FRIZQT__.TTF", 12)
+  paragon.paragonCharacterButtonText:SetFont("Interface/D3_Paragon/Fonts/MARCELLUS.TTF", 12)
   paragon.paragonCharacterButtonText:SetSize(180, 3)
   paragon.paragonCharacterButtonText:SetPoint("CENTER", 0, 6)
   paragon.paragonCharacterButtonText:SetText("|CFFFFFFFFParagon|r")
