@@ -171,7 +171,6 @@ function paragon.onLogin(event, player)
     end
 
     paragon_addon.setStats(player)
-    -- player:SetData('paragon_points', (paragon.account[pAcc].level * paragon.config.pointsPerLevel) - player:GetData('paragon_points'))
     if(pAcc ~= nil) then
       player:SetData('paragon_points', (paragon.account[pAcc].level * paragon.config.pointsPerLevel) - player:GetData('paragon_points'))
    end
@@ -262,14 +261,7 @@ function Player:SetparagonLevel(level)
       paragon.account[pAcc].exp_max = paragon.config.expMax * paragon.account[pAcc].level
       self:SetData('paragon_points', (((paragon.account[pAcc].level * paragon.config.pointsPerLevel) - self:GetData('paragon_points')) + self:GetData('paragon_points') - self:GetData('paragon_points_spend')))
       paragon.setAddonInfo(self)
-    ........
     end
-
-    -- paragon.account[pAcc].level = paragon.account[pAcc].level + level
-    -- paragon.account[pAcc].exp = 0
-    -- paragon.account[pAcc].exp_max = paragon.config.expMax * paragon.account[pAcc].level
-    -- self:SetData('paragon_points', (((paragon.account[pAcc].level * paragon.config.pointsPerLevel) - self:GetData('paragon_points')) + self:GetData('paragon_points') - self:GetData('paragon_points_spend')))
-    -- paragon.setAddonInfo(self)
 
     self:CastSpell(self, 24312, true)
     self:RemoveAura( 24312 )

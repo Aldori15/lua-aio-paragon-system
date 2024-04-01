@@ -11,12 +11,10 @@ local paragon = {}
 local paragon_addon = AIO.AddHandlers("AIO_Paragon", {})
 
 paragon.mainWindow = CreateFrame("Frame", paragon.mainWindow, UIParent)
-  -- paragon.mainWindow:SetSize(300, 540)
-  paragon.mainWindow:SetSize(300, 590)
+  paragon.mainWindow:SetSize(300, 570)
   paragon.mainWindow:SetMovable(false)
   paragon.mainWindow:EnableMouse(true)
   paragon.mainWindow:RegisterForDrag("Right_Button")
-  --paragon.mainWindow:SetPoint("CENTER", 0, 50)
   paragon.mainWindow:SetPoint("CENTER", 0, 150)
   paragon.mainWindow:Hide()
 
@@ -74,7 +72,7 @@ paragon.levelText = paragon.levelWindow:CreateFontString(paragon.levelText)
 paragon.closeButton = CreateFrame("Button", paragon.closeButton, paragon.mainWindow, "UIPanelCloseButton")
   paragon.closeButton:SetPoint("TOPRIGHT", 1.5, 3)
   paragon.closeButton:EnableMouse(true)
-  paragon.closeButton:SetSize(26, 26)
+  paragon.closeButton:SetSize(28, 28)
   paragon.closeButton:SetFrameLevel(2)
 
 paragon.expIcon = CreateFrame("Frame", paragon.expIcon, paragon.mainWindow)
@@ -97,8 +95,7 @@ paragon.expText = paragon.mainWindow:CreateFontString(paragon.expText)
 
 paragon.buttonsCoords = {
   global = {
-    -- pos_y = 70
-    pos_y = 100
+    pos_y = 85
   }
 }
 
@@ -116,10 +113,10 @@ paragon.rightText = {}
 
 paragon.spellsList = {
   [7464] = {name = 'Strength', icon = '_D3mantraofconviction'},
-  [7471] = {name = 'Agility', icon = '_D3mantraofevasion'},
-  [7477] = {name = 'Stamina', icon = '_D3mantraofretribution'},
   [7468] = {name = 'Intellect', icon = '_D3mantraofhealing'},
+  [7471] = {name = 'Agility', icon = '_D3mantraofevasion'},
   [7474] = {name = 'Spirit', icon = '_D3mantraofevasion'},
+  [7477] = {name = 'Stamina', icon = '_D3mantraofretribution'},
   [7511] = {name = 'Defense Rating', icon = '_D3mantraofretribution'},
 }
 
@@ -197,8 +194,7 @@ for id, subtable in pairs(paragon.spellsList) do
     paragon.rightButtonsTexture[id]:SetAllPoints(paragon.rightButtons[id])
     paragon.rightButtonsTexture[id]:SetTexture("Interface/D3_Paragon/paragon/ButtonBorder")
 
-  --paragon.buttonsCoords.global.pos_y = paragon.buttonsCoords.global.pos_y - 60
-  paragon.buttonsCoords.global.pos_y = paragon.buttonsCoords.global.pos_y - 55
+  paragon.buttonsCoords.global.pos_y = paragon.buttonsCoords.global.pos_y - 50
 end
 
 paragon.pointsLeft = paragon.mainWindow:CreateFontString(paragon.pointsLeft)
@@ -207,6 +203,7 @@ paragon.pointsLeft = paragon.mainWindow:CreateFontString(paragon.pointsLeft)
   paragon.pointsLeft:SetPoint("BOTTOM", 0, 75)
   paragon.pointsLeft:SetShadowColor(0, 0, 0)
   paragon.pointsLeft:SetShadowOffset(1, 1)
+
 
 paragon.saveButton = CreateFrame("Button", paragon.saveButton, paragon.mainWindow)
   paragon.saveButton:SetSize(150, 35)
@@ -249,7 +246,6 @@ paragon.paragonCharacterButton = CreateFrame("Button", paragon.paragonCharacterB
   --]]
   paragon.paragonCharacterButton:SetPoint("TOP", 0, 12)
   -- paragon.paragonCharacterButton:SetPoint("TOPLEFT", 17, -17)
-
 
   paragon.paragonCharacterButton:SetScript("OnEnter", function(self, button, down)
     GameTooltip:SetOwner(paragon.paragonCharacterButton, "ANCHOR_RIGHT", 12, 0)
@@ -370,7 +366,6 @@ function paragon_addon.setInfo(player, stats, level, points, exps)
   elseif (points == 1) then
     paragon.pointsLeft:SetText("You still have |CFF00CE00" .. points .. "|r point left to spend.")
   else
-    --paragon.pointsLeft:SetText("You don't have any points left to spend.")
     paragon.pointsLeft:SetText("You have |CFFCE0000" .. points .. "|r points left to spend.")
   end
 
