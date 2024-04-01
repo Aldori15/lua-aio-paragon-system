@@ -112,6 +112,10 @@ paragon.rightButtonsTexture = {}
 paragon.rightText = {}
 
 paragon.spellsList = {
+    --[[ -Aldori note 
+      If you want to use different icons, place the .blp file in the Interface/D3_Paragon/Icons folder
+      in your Client patch.  Then just use the icon name below.
+    --]]
   [7464] = {name = 'Strength', icon = '_D3mantraofconviction'},
   [7468] = {name = 'Intellect', icon = '_D3mantraofhealing'},
   [7471] = {name = 'Agility', icon = '_D3mantraofevasion'},
