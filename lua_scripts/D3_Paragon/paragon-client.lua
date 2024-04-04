@@ -210,7 +210,7 @@ paragon.pointsLeft = paragon.mainWindow:CreateFontString(paragon.pointsLeft)
 
 
 paragon.saveButton = CreateFrame("Button", paragon.saveButton, paragon.mainWindow)
-  paragon.saveButton:SetSize(150, 35)
+  paragon.saveButton:SetSize(125, 40)
   paragon.saveButton:SetNormalTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-gold-up")
   paragon.saveButton:SetHighlightTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-highlight")
   paragon.saveButton:SetPushedTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-gold-down")
@@ -233,14 +233,14 @@ paragon.saveButtonText = paragon.saveButton:CreateFontString(paragon.saveButtonT
   paragon.saveButtonText:SetShadowOffset(0.5, 0.5)
 
 
-
 paragon.paragonCharacterButton = CreateFrame("Button", paragon.paragonCharacterButton, CharacterFrame)
-  paragon.paragonCharacterButton:SetSize(90, 35)
+  paragon.paragonCharacterButton:SetSize(71, 40)
   paragon.paragonCharacterButton:SetNormalTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-gold-up")
   paragon.paragonCharacterButton:SetHighlightTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-highlight")
   paragon.paragonCharacterButton:SetPushedTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-gold-down")
   paragon.paragonCharacterButton:SetFrameStrata("DIALOG")
   paragon.paragonCharacterButton:SetFrameLevel(100)
+
   --[[ -Aldori note 
     Not sure if we want the button to be anchored to the top center of the player frame universally
     for everyone, regardless of their UI setups (ElvUI vs. non-ElvUI) since ElvUI displays the 
@@ -248,7 +248,7 @@ paragon.paragonCharacterButton = CreateFrame("Button", paragon.paragonCharacterB
     possibly check if the player has ElvUI enabled, then use the "TOPLEFT", 17, -17" anchor point
     and if they don't have ElvUI enabled, then use the "TOP", 0, 12" anchor point.
   --]]
-  paragon.paragonCharacterButton:SetPoint("TOP", 0, 12)
+  paragon.paragonCharacterButton:SetPoint("BOTTOMRIGHT", -5, -37)
   -- paragon.paragonCharacterButton:SetPoint("TOPLEFT", 17, -17)
 
   paragon.paragonCharacterButton:SetScript("OnEnter", function(self, button, down)
@@ -278,10 +278,12 @@ paragon.paragonCharacterButton = CreateFrame("Button", paragon.paragonCharacterB
 
 
 paragon.paragonCharacterButtonText = paragon.paragonCharacterButton:CreateFontString(paragon.paragonCharacterButtonText)
-  paragon.paragonCharacterButtonText:SetFont("Interface/D3_Paragon/Fonts/MARCELLUS.TTF", 12)
+  --paragon.paragonCharacterButtonText:SetFont("Interface/D3_Paragon/Fonts/MARCELLUS.TTF", 12)
+  paragon.paragonCharacterButtonText:SetFont("Fonts\\FRIZQT__.TTF", 12, "OUTLINE")
   paragon.paragonCharacterButtonText:SetSize(180, 3)
   paragon.paragonCharacterButtonText:SetPoint("CENTER", 0, 6)
-  paragon.paragonCharacterButtonText:SetText("|CFFFFFFFFParagon|r")
+  --paragon.paragonCharacterButtonText:SetText("|CFFFFFFFFParagon|r")
+  paragon.paragonCharacterButtonText:SetText("|CFFFFD900Paragon|r")
   paragon.paragonCharacterButtonText:SetShadowColor(0, 0, 0)
   paragon.paragonCharacterButtonText:SetShadowOffset(0.5, 0.5)
 
