@@ -62,7 +62,7 @@ paragon.levelWindowTexture = paragon.levelWindow:CreateTexture()
   paragon.levelWindowTexture:SetTexture("interface/D3_Paragon/paragon/paragon_frame")
   paragon.levelWindowTexture:SetTexCoord(0.05419921875, 0.17431640625, 0.31201171875, 0.42724609375)
 
-paragon.levelText = paragon.levelWindow:CreateFontString(paragon.levelText)
+paragon.levelText = paragon.levelWindow:CreateFontString(paragon.pointsText)
   paragon.levelText:SetFont("Fonts\\FRIZQT__.TTF", 18)
   paragon.levelText:SetSize(190, 3)
   paragon.levelText:SetPoint("CENTER", -2, 1)
@@ -75,22 +75,22 @@ paragon.closeButton = CreateFrame("Button", paragon.closeButton, paragon.mainWin
   paragon.closeButton:SetSize(28, 28)
   paragon.closeButton:SetFrameLevel(2)
 
-paragon.expIcon = CreateFrame("Frame", paragon.expIcon, paragon.mainWindow)
-  paragon.expIcon:SetSize(39, 39)
-  paragon.expIcon:SetBackdrop({
-    bgFile = "Interface/D3_Paragon/Icons/garr_currencyicon-xp",
-    insets = { left = 0, right = 0, top = 0, bottom = 0 }
-  })
-  paragon.expIcon:SetPoint("TOP", 0, -115)
-  paragon.expIcon:SetFrameLevel(6)
+--paragon.expIcon = CreateFrame("Frame", paragon.expIcon, paragon.mainWindow)
+--  paragon.expIcon:SetSize(39, 39)
+--  paragon.expIcon:SetBackdrop({
+--    bgFile = "Interface/D3_Paragon/Icons/garr_currencyicon-xp",
+--    insets = { left = 0, right = 0, top = 0, bottom = 0 }
+--  })
+--  paragon.expIcon:SetPoint("TOP", 0, -115)
+--  paragon.expIcon:SetFrameLevel(6)
 
 
-paragon.expText = paragon.mainWindow:CreateFontString(paragon.expText)
-  paragon.expText:SetFont("Fonts\\FRIZQT__.TTF", 13)
-  paragon.expText:SetSize(190, 3)
-  paragon.expText:SetPoint("TOP", 0, -155)
-  paragon.expText:SetShadowColor(0.156, 0.2, 0.2)
-  paragon.expText:SetShadowOffset(0.5, 0)
+--paragon.expText = paragon.mainWindow:CreateFontString(paragon.expText)
+--  paragon.expText:SetFont("Fonts\\FRIZQT__.TTF", 13)
+ -- paragon.expText:SetSize(190, 3)
+ -- paragon.expText:SetPoint("TOP", 0, -155)
+ -- paragon.expText:SetShadowColor(0.156, 0.2, 0.2)
+ -- paragon.expText:SetShadowOffset(0.5, 0)
 
 
 paragon.buttonsCoords = {
@@ -158,6 +158,7 @@ for id, subtable in pairs(paragon.spellsList) do
   paragon.centerButtons[id]:SetScript("OnMouseUp", function(self, button, down)
     if (button == "LeftButton") then
       AIO.Handle("AIO_Paragon", "setStatsInformation", id, 1, true)
+	  
     elseif (button == "RightButton") then
       AIO.Handle("AIO_Paragon", "setStatsInformation", id, 1, false)
     elseif (button == "MiddleButton") then
@@ -232,6 +233,17 @@ paragon.saveButtonText = paragon.saveButton:CreateFontString(paragon.saveButtonT
   paragon.saveButtonText:SetShadowColor(0, 0, 0)
   paragon.saveButtonText:SetShadowOffset(0.5, 0.5)
 
+paragon.consumeItemButton = CreateFrame("Button", "ConsumeItemButton", paragon.mainWindow, "GameMenuButtonTemplate")
+paragon.consumeItemButton:SetSize(125, 40) -- Match the size of your other buttons for consistency
+paragon.consumeItemButton:SetPoint("BOTTOM", 0, 400) -- Adjust the position as needed
+paragon.consumeItemButton:SetText("Spend Point") -- Set the button text
+paragon.consumeItemButton:SetNormalFontObject("GameFontNormal")
+paragon.consumeItemButton:SetHighlightFontObject("GameFontHighlight")
+paragon.consumeItemButton:SetFrameStrata("TOOLTIP")
+
+paragon.consumeItemButton:SetScript("OnClick", function()
+    AIO.Handle("AIO_Paragon", "ConsumeItemForPoint")
+end)
 
 paragon.paragonCharacterButton = CreateFrame("Button", paragon.paragonCharacterButton, CharacterFrame)
   paragon.paragonCharacterButton:SetSize(71, 40)
@@ -259,7 +271,7 @@ paragon.paragonCharacterButton = CreateFrame("Button", paragon.paragonCharacterB
     for spellid, subtable in pairs(paragon.spellsList) do
       GameTooltip:AddLine("|CFFFFFFFF+ "..paragon.rightText[spellid]:GetText().."|CFFFFFFFF "..subtable.name.."|r");
     end
-    GameTooltip:AddLine("\n|CFFFFFFFF"..paragon.expText:GetText().."|r ");
+    --GameTooltip:AddLine("\n|CFFFFFFFF"..paragon.expText:GetText().."|r ");
 
     GameTooltip:Show()
   end)
@@ -375,5 +387,5 @@ function paragon_addon.setInfo(player, stats, level, points, exps)
     paragon.pointsLeft:SetText("You have |CFFCE0000" .. points .. "|r points left to spend.")
   end
 
-  paragon.expText:SetText("|CFFC758FE(".. exps.exp .. " / " .. exps.exp_max .. ")")
+  --paragon.expText:SetText("|CFFC758FE(".. exps.exp .. " / " .. exps.exp_max .. ")")
 end

@@ -10,15 +10,15 @@ local paragon = {
         db_name = 'ac_eluna',
 
         pointsPerLevel = 1,
-        minLevel = 1,
+        minLevel = 0,
 
-        expMulti = 1,
+        expMulti = 0,
         expMax = 500,
 
-        pveKill = 100,
-        pvpKill = 10,
+        pveKill = 0,
+        pvpKill = 0,
 
-        levelDiff = 10,
+        levelDiff = 0,
     },
 
     spells = {
@@ -31,7 +31,20 @@ local paragon = {
     },
 }
 
-local paragon_addon = AIO.AddHandlers("AIO_Paragon", {})
+local paragonPointCaps = {
+    {level = 20, maxPoints = 5},
+    {level = 40, maxPoints = 10},
+    {level = 60, maxPoints = 15},
+    {level = 80, maxPoints = 20},
+    -- Add more ranges as needed
+}
+
+local paragon_addon = AIO.AddHandlers("AIO_Paragon", {
+    ConsumeItemForPoint = function(player, msg)
+        -- Assuming the item ID for the custom currency is 12345
+        consumeParagonCurrencyItem(player, 37711, 1) -- Consumes 1 item for a point
+    end
+})
 
 paragon.account = {}
 
@@ -41,8 +54,8 @@ function paragon_addon.sendInformations(msg, player)
 
     local temp = {
         stats = {},
-        level = 1,
-        points = 1,
+        level = 0,
+        points = 0,
     }
     for stat, _ in pairs(paragon.spells) do
         temp.stats[stat] = player:GetData('paragon_stats_'..stat)
@@ -50,7 +63,7 @@ function paragon_addon.sendInformations(msg, player)
 
     if not paragon.account[pAcc] then
         paragon.account[pAcc] = {
-            level = 1,
+            level = 0,
             exp = 0,
             exp_max = 0,
         }
@@ -104,8 +117,8 @@ function paragon_addon.setStatsInformation(player, stat, value, flags)
         if ((player:GetData('paragon_points') - value) >= 0) then
           player:SetData('paragon_stats_'..stat, (player:GetData('paragon_stats_'..stat) + value))
           player:SetData('paragon_points', (player:GetData('paragon_points') - value))
-
-          player:SetData('paragon_points_spend', (player:GetData('paragon_points_spend') + value))
+		  player:SetData('paragon_points_spend', (player:GetData('paragon_points_spend') + value))
+		  
         else
           player:SendNotification('You have no more points to spend.')
           return false
@@ -255,15 +268,80 @@ RegisterPlayerEvent(7, paragon.onKillCreatureOrPlayer)
 function Player:SetparagonLevel(level)
     local pAcc = self:GetAccountId()
 
-    if(pAcc ~= nil) then
+    if pAcc ~= nil then
       paragon.account[pAcc].level = paragon.account[pAcc].level + level
       paragon.account[pAcc].exp = 0
       paragon.account[pAcc].exp_max = paragon.config.expMax * paragon.account[pAcc].level
-      self:SetData('paragon_points', (((paragon.account[pAcc].level * paragon.config.pointsPerLevel) - self:GetData('paragon_points')) + self:GetData('paragon_points') - self:GetData('paragon_points_spend')))
+
+      local totalAllowedPoints = paragon.account[pAcc].level * paragon.config.pointsPerLevel
+      local currentTotalPoints = self:GetData('paragon_points') + self:GetData('paragon_points_spend')
+
+      -- Adjust points if the total exceeds the allowed points for the new level
+      if currentTotalPoints > totalAllowedPoints then
+          local difference = currentTotalPoints - totalAllowedPoints
+          self:SetData('paragon_points', self:GetData('paragon_points') - difference)
+      end
+
+      -- This updates the player's data on client-side as well
       paragon.setAddonInfo(self)
     end
 
     self:CastSpell(self, 24312, true)
-    self:RemoveAura( 24312 )
-    self:SendNotification('|CFF00A2FFYou have just passed a level of Paragon.\nCongratulations, you are now level '..paragon.account[pAcc].level..'!')
+    self:RemoveAura(24312)
+    self:SendNotification('|CFF00A2FFYou have just passed a level of Paragon.\nCongratulations, you are now level ' .. paragon.account[pAcc].level .. '!')
+end
+function getMaxParagonPointsForLevel(playerLevel)
+    local maxPoints = 0
+    for _, range in ipairs(paragonPointCaps) do
+        if playerLevel <= range.level then
+            maxPoints = range.maxPoints
+            break
+        end
+    end
+    return maxPoints
+end
+
+function consumeParagonCurrencyItem(player, itemId, quantity)
+    -- Assume each level grants 1 Paragon point directly
+    local awardedPoints = paragon.account[player:GetAccountId()].level
+    local maxPoints = getMaxParagonPointsForLevel(player:GetLevel())
+    
+    -- Check if we have reached or exceeded the maximum points for the player's level
+    if awardedPoints >= maxPoints then
+        player:SendNotification("You have reached the maximum Paragon points for your level.")
+        return
+    end
+
+    if player:GetItemCount(itemId) >= quantity then
+        player:RemoveItem(itemId, quantity)
+        player:SetData('paragon_points', player:GetData('paragon_points') + 1)
+        -- Here, instead of directly modifying 'paragon_points', we might need to adjust the player's level
+        -- or directly acknowledge the additional point in some way that aligns with your system's logic.
+		levelUpPlayer(player)
+        player:SendNotification("You have gained a Paragon point.")
+        -- Ensure this function reflects the current, accurate count of Paragon points
+        paragon.setAddonInfo(player)
+    else
+        player:SendNotification("You do not have the required item.")
+    end
+end
+
+function updatePlayerLevelInDB(player, newLevel)
+    local accountId = player:GetAccountId()
+    -- Construct the SQL query to update the player's level
+    local updateQuery = string.format("UPDATE `%s`.`paragon_account` SET level = %d WHERE account_id = %d", paragon.config.db_name, newLevel, accountId)
+    -- Execute the query
+    CharDBExecute(updateQuery)
+end
+
+function levelUpPlayer(player)
+    local accountId = player:GetAccountId()
+    local newLevel = paragon.account[accountId].level + 1  -- Increment the level
+    paragon.account[accountId].level = newLevel  -- Update the in-memory representation
+    
+    -- Now, update the database to reflect this change
+    updatePlayerLevelInDB(player, newLevel)
+    
+    -- Optionally, refresh client-side data or perform other actions needed after leveling up
+    paragon.setAddonInfo(player)
 end
