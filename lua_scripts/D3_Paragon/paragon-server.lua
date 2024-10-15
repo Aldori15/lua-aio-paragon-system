@@ -225,7 +225,7 @@ RegisterServerEvent(16, paragon.setPlayers)
 
 function paragon.onLevelUp(event, player, oldLevel)
     if player:GetLevel() == paragon.config.maxPlayerLevel then
-        player:SendBroadcastMessage("|CFF00A2FFCongratulations! You have reached level 60. The Paragon system has been unlocked and can be accessed from your Character Pane.")
+        player:SendBroadcastMessage("|CFF00A2FFCongratulations! You have reached level 60. The Paragon system has been unlocked and you can now started gaining Paragon levels.")
     end
 end
 RegisterPlayerEvent(13, paragon.onLevelUp)
