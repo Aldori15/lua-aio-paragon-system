@@ -11,8 +11,7 @@ local paragon = {
         pointsPerLevel = 1, -- number of stat points to grant per level of Paragon
         talentsPerLevel = 1, -- number of talent points to grant per level of Paragon
 
-        minPlayerLevel = 60, -- minimum player level to be eligible for Paragon XP
-        maxPlayerLevel = 60, -- What is considered the max level on your server? Once player reaches this level, it will alert them that the Paragon system has been unlocked.
+        minPlayerLevel = 60, -- What level does the player need to be to unlock the Paragon XP system?
 
         expMax = 500, -- XP required to reach the next level of Paragon (multiplied with each Paragon level)
 
@@ -26,7 +25,7 @@ local paragon = {
         worldBossXP = nil, -- Randomized in the setExp function (between 250 and 270)
         pvpKillXP = nil, -- Randomized in the setExp function (between 8 and 12)
 
-        levelDiff = 10, -- Level difference (+ or -) from the player that the creature must be to be considered "eligible"
+        levelDiff = 5, -- Level difference (+ or -) from the player that the creature must be to be considered "eligible"
     },
 
     spells = {
@@ -51,6 +50,7 @@ function paragon_addon.sendInformations(msg, player)
         stats = {},
         level = 1,
         points = 1,
+        playerLevel = 1,
     }
     for stat, _ in pairs(paragon.spells) do
         temp.stats[stat] = player:GetData('paragon_stats_'..stat)
@@ -70,8 +70,10 @@ function paragon_addon.sendInformations(msg, player)
         exp = paragon.account[player:GetAccountId()].exp,
         exp_max = paragon.account[player:GetAccountId()].exp_max
     }
+    temp.playerLevel = player:GetLevel()
+    temp.minPlayerLevel = paragon.config.minPlayerLevel
 
-    return msg:Add("AIO_Paragon", "setInfo", temp.stats, temp.level, temp.points, temp.exps)
+    return msg:Add("AIO_Paragon", "setInfo", temp.stats, temp.level, temp.points, temp.exps, temp.playerLevel, temp.minPlayerLevel)
 end
 AIO.AddOnInit(paragon_addon.sendInformations)
 
@@ -102,7 +104,6 @@ function paragon_addon.setStats(player)
 end
 
 
--- flags: true = add_points.  false = remove_points
 function paragon_addon.setStatsInformation(player, stat, value, flags)
     local pCombat = player:IsInCombat()
     if (not pCombat) then
@@ -224,9 +225,11 @@ RegisterServerEvent(16, paragon.setPlayers)
 
 
 function paragon.onLevelUp(event, player, oldLevel)
-    if player:GetLevel() == paragon.config.maxPlayerLevel then
-        player:SendBroadcastMessage("|CFF00A2FFCongratulations! You have reached level 60. The Paragon system has been unlocked and you can now started gaining Paragon levels.")
+    if player:GetLevel() == paragon.config.minPlayerLevel then
+        player:SendBroadcastMessage('|CFF00A2FFCongratulations! You have reached level '..paragon.config.minPlayerLevel..'. The Paragon system has been unlocked and you can now started gaining Paragon levels.')
     end
+
+    paragon.setAddonInfo(player)
 end
 RegisterPlayerEvent(13, paragon.onLevelUp)
 
@@ -268,11 +271,15 @@ function paragon.setExp(player, victim)
             paragon.account[pAcc].exp = paragon.account[pAcc].exp + paragon.config.pvpKillXP
             player:SendBroadcastMessage('|CFF00A2FFYour PvP kill gives you '..paragon.config.pvpKillXP..' paragon experience points.')
         end
+
         paragon.setAddonInfo(player)
     end
 
     if paragon.account[pAcc].exp >= paragon.account[pAcc].exp_max then
-        player:SetparagonLevel(1)
+        -- If the XP exceeds the max, be sure to carry over any excess/surplus XP to the next level
+        local carryOverXP = paragon.account[pAcc].exp - paragon.account[pAcc].exp_max
+
+        player:SetparagonLevel(1, carryOverXP)
     end
 end
 
@@ -294,16 +301,18 @@ RegisterPlayerEvent(6, paragon.onKillCreatureOrPlayer)
 RegisterPlayerEvent(7, paragon.onKillCreatureOrPlayer)
 
 
-function Player:SetparagonLevel(level)
+function Player:SetparagonLevel(level, carryOverXP)
     local pAcc = self:GetAccountId()
     if(pAcc ~= nil) then
         -- Increment the Paragon level
         paragon.account[pAcc].level = paragon.account[pAcc].level + level
-        paragon.account[pAcc].exp = 0
+        paragon.account[pAcc].exp = carryOverXP
         paragon.account[pAcc].exp_max = paragon.config.expMax * paragon.account[pAcc].level
         
         -- Update the available paragon points
-        self:SetData('paragon_points', (((paragon.account[pAcc].level * paragon.config.pointsPerLevel) - self:GetData('paragon_points')) + self:GetData('paragon_points') - self:GetData('paragon_points_spend')))
+        local totalPoints = paragon.account[pAcc].level * paragon.config.pointsPerLevel
+        local availablePoints = totalPoints - self:GetData('paragon_points_spend')
+        self:SetData('paragon_points', availablePoints)
         
         -- Grant talent points based on the configuration
         local newTalentPoints = paragon.config.talentsPerLevel * level

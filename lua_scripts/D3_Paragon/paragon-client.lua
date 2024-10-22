@@ -338,7 +338,7 @@ paragon.paragonCharacterButtonText = paragon.paragonCharacterButton:CreateFontSt
 --     paragon.characterFrameBackground:SetFrameLevel(6)
 
 
-function paragon_addon.setInfo(player, stats, level, points, exps)
+function paragon_addon.setInfo(player, stats, level, points, exps, playerLevel, minPlayerLevel)
     for statid, value in pairs(stats) do
         paragon.rightText[statid]:SetText("|CFF00CE00" .. value)
     end
@@ -354,4 +354,11 @@ function paragon_addon.setInfo(player, stats, level, points, exps)
     end
 
     paragon.expText:SetText("|CFFC758FE(".. exps.exp .. " / " .. exps.exp_max .. ")")
+
+    -- Hide the Paragon button if the player has not unlocked the Paragon system
+    if playerLevel < minPlayerLevel then
+        paragon.paragonCharacterButton:Hide()
+    else
+        paragon.paragonCharacterButton:Show()
+    end
 end
