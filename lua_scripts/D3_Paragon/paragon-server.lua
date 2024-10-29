@@ -50,8 +50,8 @@ function paragon_addon.sendInformations(msg, player)
         stats = {},
         level = 1,
         points = 1,
-        playerLevel = 1,
     }
+
     for stat, _ in pairs(paragon.spells) do
         temp.stats[stat] = player:GetData('paragon_stats_'..stat)
     end
@@ -60,7 +60,7 @@ function paragon_addon.sendInformations(msg, player)
         paragon.account[pAcc] = {
             level = 1,
             exp = 0,
-            exp_max = 0,
+            exp_max = paragon.config.expMax
         }
     end
 
@@ -155,19 +155,22 @@ function paragon.onLogin(event, player)
     local getparagonCharInfo = CharDBQuery('SELECT strength, agility, stamina, intellect, spirit, defense FROM `'..paragon.config.db_name..'`.`paragon_characters` WHERE account_id = '..pAcc)
     if getparagonCharInfo then
         player:setparagonInfo(getparagonCharInfo:GetUInt32(0), getparagonCharInfo:GetUInt32(1), getparagonCharInfo:GetUInt32(2), getparagonCharInfo:GetUInt32(3), getparagonCharInfo:GetUInt32(4), getparagonCharInfo:GetUInt32(5))
-        player:SetData('paragon_points', getparagonCharInfo:GetUInt32(0) + getparagonCharInfo:GetUInt32(1) + getparagonCharInfo:GetUInt32(2) + getparagonCharInfo:GetUInt32(3) + getparagonCharInfo:GetUInt32(4) + getparagonCharInfo:GetUInt32(5))
+        local totalPoints = getparagonCharInfo:GetUInt32(0) + getparagonCharInfo:GetUInt32(1) + getparagonCharInfo:GetUInt32(2) + getparagonCharInfo:GetUInt32(3) + getparagonCharInfo:GetUInt32(4) + getparagonCharInfo:GetUInt32(5)
+        player:SetData('paragon_points', totalPoints)
     else
         local pGuid = player:GetGUIDLow()
         CharDBExecute('INSERT INTO `'..paragon.config.db_name..'`.`paragon_characters` VALUES ('..pAcc..', '..pGuid..', 0, 0, 0, 0, 0, 0)')
         player:setparagonInfo(0, 0, 0, 0, 0, 0)
+        player:SetData('paragon_points', 0)
     end
-    player:SetData('paragon_points_spend', 0)
+    -- player:SetData('paragon_points_spend', 0)
+    player:SetData('paragon_points_spend', player:GetData('paragon_points_spend') or 0)
 
     if not paragon.account[pAcc] then
         paragon.account[pAcc] = {
             level = 1,
             exp = 0,
-            exp_max = 0,
+            exp_max = paragon.config.expMax
         }
     end
 
@@ -181,8 +184,12 @@ function paragon.onLogin(event, player)
     end
 
     paragon_addon.setStats(player)
+
     if(pAcc ~= nil) then
-        player:SetData('paragon_points', (paragon.account[pAcc].level * paragon.config.pointsPerLevel) - player:GetData('paragon_points'))
+        local pointsEarned = paragon.account[pAcc].level * paragon.config.pointsPerLevel
+        local pointsSpent = player:GetData('paragon_points_spend') or 0
+        -- local pointsSpent = player:GetData('paragon_points') or 0
+        player:SetData('paragon_points', pointsEarned - pointsSpent)
    end
 end
 RegisterPlayerEvent(3, paragon.onLogin)
@@ -206,7 +213,7 @@ function paragon.onLogout(event, player)
         paragon.account[pAcc] = {
             level = 1,
             exp = 0,
-            exp_max = 0,
+            exp_max = paragon.config.expMax
           }
     end
 
