@@ -8,13 +8,16 @@ if AIO.AddAddon() then return end
 local paragon = {}
 local paragon_addon = AIO.AddHandlers("AIO_Paragon", {})
 
-paragon.mainWindow = CreateFrame("Frame", paragon.mainWindow, UIParent)
+paragon.mainWindow = CreateFrame("Frame", "ParagonMainWindow", UIParent)
+-- paragon.mainWindow = CreateFrame("Frame", paragon.mainWindow, UIParent)
     paragon.mainWindow:SetSize(300, 570)
     paragon.mainWindow:SetMovable(false)
     paragon.mainWindow:EnableMouse(true)
     paragon.mainWindow:RegisterForDrag("Right_Button")
     paragon.mainWindow:SetPoint("CENTER", 0, 150)
     paragon.mainWindow:Hide()
+    -- Add the frame to UISpecialFrames to close it with the Escape key
+    tinsert(UISpecialFrames, paragon.mainWindow:GetName())
 
 paragon.mainWindowTexture = paragon.mainWindow:CreateTexture()
     paragon.mainWindowTexture:SetAllPoints(paragon.mainWindow)
