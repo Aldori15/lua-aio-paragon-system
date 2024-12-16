@@ -229,16 +229,13 @@ paragon.saveButtonText = paragon.saveButton:CreateFontString(paragon.saveButtonT
     paragon.saveButtonText:SetShadowOffset(0.5, 0.5)
 
 paragon.paragonCharacterButton = CreateFrame("Button", paragon.paragonCharacterButton, CharacterFrame)
-    paragon.paragonCharacterButton:SetSize(81, 40)
-    -- paragon.paragonCharacterButton:SetSize(81, 42)
+    paragon.paragonCharacterButton:SetSize(86, 40)
+    paragon.paragonCharacterButton:SetPoint("TOP", 0, 18)
     paragon.paragonCharacterButton:SetNormalTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-gold-up")
     paragon.paragonCharacterButton:SetHighlightTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-highlight")
     paragon.paragonCharacterButton:SetPushedTexture("Interface/D3_Paragon/buttons/ui-dialogbox-button-gold-down")
     paragon.paragonCharacterButton:SetFrameStrata("DIALOG")
     paragon.paragonCharacterButton:SetFrameLevel(100)
-
-    paragon.paragonCharacterButton:SetPoint("TOP", 0, 28)
-    -- paragon.paragonCharacterButton:SetPoint("BOTTOMLEFT", 270, -40)
 
 paragon.paragonCharacterButton:SetScript("OnEnter", function(self, button, down)
     GameTooltip:SetOwner(paragon.paragonCharacterButton, "ANCHOR_RIGHT", 12, 0)
