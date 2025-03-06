@@ -153,7 +153,6 @@ for id, subtable in pairs(paragon.spellsList) do
         paragon.centerButtons[id]:SetFrameLevel(3)
 
     local function handleParagonStatChange(self, button)
-        local id = self:GetID()
         if button == "LeftButton" then
             AIO.Handle("AIO_Paragon", "setStatsInformation", id, 1, true)
         elseif button == "RightButton" then
