@@ -288,14 +288,15 @@ function paragon.setExp(player, victim, numMembers)
         if levelDiff > paragon.config.halfXpRange then xpGain = math.floor(xpGain * paragon.config.quarterXpMultiplier) end
         if levelDiff > paragon.config.fullXpRange then xpGain = math.floor(xpGain * paragon.config.halfXpMultiplier) end
     end
-    
-    if paragon.config.showXPGainedMessages then
-        player:SendBroadcastMessage(string.format("|CFF00A2FFYou earned %d Paragon XP!|r", xpGain))
-    end
-    
+        
     -- Diminishing returns for group members
     local groupPenalty = 1 - (math.min((numMembers or 1) - 1, 4) * paragon.config.groupXpPenaltyStep)
     local adjustedXP = math.floor(xpGain * groupPenalty)
+
+    if paragon.config.showXPGainedMessages then
+        player:SendBroadcastMessage(string.format("|CFF00A2FFYou earned %d Paragon XP!|r", adjustedXP))
+    end
+
     paragon.account[pAcc].exp = paragon.account[pAcc].exp + adjustedXP
 
     paragon.setAddonInfo(player)
