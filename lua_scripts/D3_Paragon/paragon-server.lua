@@ -18,6 +18,7 @@ local paragon = {
         expScalingFactor = 1.2, -- Controls how quickly XP required per Paragon level increases.
         -- Higher values (e.g., 1.5) cause XP to increase more **exponentially**, making later Paragon levels harder.
         -- Lower values (e.g., 1.1) make Paragon leveling easier by reducing XP growth.
+        groupXpPenaltyStep = 0.1, -- % XP diminishing returns per extra group member (default 10%)
 
         fullXpRange = 5, -- Full XP is granted if the enemy is within this level range (±5 levels).
         halfXpRange = 10, -- Half XP is granted if the enemy is within this level range (±10 levels).
@@ -106,8 +107,8 @@ end
 
 
 function paragon_addon.setStatsInformation(player, stat, value, flags)
-    local inCombat = player:IsInCombat()
-    if (not inCombat) then
+    local pCombat = player:IsInCombat()
+    if (not pCombat) then
         local pLevel = player:GetLevel()
         if (pLevel >= paragon.config.minPlayerLevel) then
             if flags then
@@ -292,8 +293,9 @@ function paragon.setExp(player, victim, numMembers)
         player:SendBroadcastMessage(string.format("|CFF00A2FFYou earned %d Paragon XP!|r", xpGain))
     end
     
-    -- Adjust XP for group members
-    local adjustedXP = math.floor(xpGain / (numMembers or 1))
+    -- Diminishing returns for group members
+    local groupPenalty = 1 - (math.min((numMembers or 1) - 1, 4) * paragon.config.groupXpPenaltyStep)
+    local adjustedXP = math.floor(xpGain * groupPenalty)
     paragon.account[pAcc].exp = paragon.account[pAcc].exp + adjustedXP
 
     paragon.setAddonInfo(player)
