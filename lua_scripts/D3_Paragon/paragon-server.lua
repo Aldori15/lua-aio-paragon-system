@@ -324,6 +324,7 @@ function paragon.onKillCreatureOrPlayer(event, player, victim)
             paragon.setExp(player, victim, 1)
         end
     end
+    return false
 end
 RegisterPlayerEvent(6, paragon.onKillCreatureOrPlayer)
 RegisterPlayerEvent(7, paragon.onKillCreatureOrPlayer)
