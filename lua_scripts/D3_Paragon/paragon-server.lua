@@ -2,7 +2,7 @@
 -- PARAGON SERVER CONFIGURATION
 -- --------------------------------
 
-local AIO = AIO or require("aio")
+local AIO = AIO or require("AIO")
 
 local paragon = {
     config = {
@@ -42,9 +42,13 @@ local paragon = {
 
 local paragon_addon = AIO.AddHandlers("AIO_Paragon", {})
 paragon.account = {}
-paragon.botCache = {}
-paragon.hasPlayerbots = nil -- we'll detect this once on first call
 
+local HAS_PLAYERBOTS = type(GetPlayerbotsMgr) == "function"
+
+local function ShouldSkipBot(player)
+    if not HAS_PLAYERBOTS then return false end
+    return player:IsRandomBot() or player:IsAddclassBot()
+end
 
 function paragon_addon.sendInformations(msg, player)
     local pGuid = player:GetGUIDLow()
@@ -109,8 +113,11 @@ end
 
 
 function paragon_addon.setStatsInformation(player, stat, value, flags)
-    -- Always clamp value to 1 for individual clicks (wheel and middle click will override this)
-    value = math.min(1, value or 1)
+    -- -- Always clamp value to 1 for individual clicks (wheel and middle click will override this)
+    -- value = math.min(1, value or 1)
+
+    -- Clamp value between 1 and 10 since middle click can adjust it by 10
+    value = math.max(1, math.min(value or 1, 10))
 
     if player:IsInCombat() then
         player:SendNotification("You can't do this in combat.")
@@ -166,41 +173,11 @@ function Player:setparagonInfo(strength, agility, stamina, intellect, spirit, de
 end
 
 
-function paragon.checkCoreVersion()
-    -- Detect whether we're on Playerbot branch
-    if paragon.hasPlayerbots == nil then
-        local coreVersion = GetCoreVersion()
-        paragon.hasPlayerbots = coreVersion and coreVersion:lower():find("playerbot") ~= nil
-    end
-end
-
-
-function paragon.isPlayerBotAccount(accountId)
-    paragon.checkCoreVersion()
-
-    if not paragon.hasPlayerbots then return false end
-    
-    local cached = paragon.botCache[accountId]
-    if cached ~= nil then return cached end
-
-    local result = AuthDBQuery(string.format("SELECT username FROM account WHERE id = %d", accountId))
-    if result then
-        local username = result:GetString(0)
-        local isBot = username:sub(1, 6) == "RNDBOT"
-        paragon.botCache[accountId] = isBot
-        return isBot
-    end
-
-    paragon.botCache[accountId] = false
-    return false
-end
-
-
 function paragon.onLogin(event, player)
     local pAcc = player:GetAccountId()
 
-    -- Skip playerbot accounts
-    if paragon.isPlayerBotAccount(pAcc) then return end
+    -- Skip server-managed RandomBots and AddClass bots
+    if ShouldSkipBot(player) then return end
 
     -- Initialize account-level Paragon data if not yet loaded
     if not paragon.account[pAcc] then
@@ -259,7 +236,7 @@ RegisterPlayerEvent(3, paragon.onLogin)
 
 function paragon.getPlayers(event)
     for _, player in pairs(GetPlayersInWorld()) do
-        if not paragon.isPlayerBotAccount(player:GetAccountId()) then
+        if not ShouldSkipBot(player) then
             paragon.onLogin(event, player)
         end
     end
@@ -271,8 +248,8 @@ function paragon.onLogout(event, player)
     local pAcc = player:GetAccountId()
     local pGuid = player:GetGUIDLow()
 
-    -- Skip playerbot accounts
-    if paragon.isPlayerBotAccount(pAcc) then return end
+    -- Skip server-managed RandomBots and AddClass bots
+    if ShouldSkipBot(player) then return end
 
     local strength, agility, stamina, intellect, spirit, defense, spent = player:GetData('paragon_stats_7464'), player:GetData('paragon_stats_7471'), player:GetData('paragon_stats_7477'), player:GetData('paragon_stats_7468'), player:GetData('paragon_stats_7474'), player:GetData('paragon_stats_7511'), player:GetData('paragon_points_spend')
     CharDBExecute(string.format("REPLACE INTO `%s`.`paragon_characters` VALUES (%d, %d, %d, %d, %d, %d, %d, %d, %d)", paragon.config.db_name, pAcc, pGuid, strength, agility, stamina, intellect, spirit, defense, spent))
@@ -293,7 +270,7 @@ RegisterPlayerEvent(4, paragon.onLogout)
 
 function paragon.setPlayers(event)
     for _, player in pairs(GetPlayersInWorld()) do
-        if not paragon.isPlayerBotAccount(player:GetAccountId()) then
+        if not ShouldSkipBot(player) then
             paragon.onLogout(event, player)
         end
     end
@@ -302,6 +279,9 @@ RegisterServerEvent(16, paragon.setPlayers)
 
 
 function paragon.onLevelUp(event, player, oldLevel)
+    -- Skip server-managed RandomBots and AddClass bots
+    if ShouldSkipBot(player) then return end
+
     if player:GetLevel() == paragon.config.minPlayerLevel then
         player:SendBroadcastMessage(string.format("|CFF00A2FFCongratulations! You have reached level %d. The Paragon system has been unlocked and you can now start gaining Paragon levels.", paragon.config.minPlayerLevel))        
     end
@@ -386,12 +366,12 @@ function paragon.onKillCreatureOrPlayer(event, player, victim)
             local members = pGroup:GetMembers()
             local numMembers = #members
             for _, groupMember in pairs(members) do
-                if not paragon.isPlayerBotAccount(groupMember:GetAccountId()) then
+                if not ShouldSkipBot(groupMember) then
                     paragon.setExp(groupMember, victim, numMembers)
                 end
             end
         else
-            if not paragon.isPlayerBotAccount(player:GetAccountId()) then
+            if not ShouldSkipBot(player) then
                 paragon.setExp(player, victim, 1)
             end
         end
