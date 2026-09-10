@@ -14,17 +14,18 @@ local paragon = {
         talentsPerLevel = 1, -- Number of talent points granted when eligible
 
         minPlayerLevel = 60, -- What level does the player need to be to unlock the Paragon XP system?
-        expMax = 400, -- Base XP required for the first Paragon level. XP requirements scale exponentially with each further level.
-        expScalingFactor = 1.2, -- Controls how quickly XP required per Paragon level increases.
-        -- Higher values (e.g., 1.5) cause XP to increase more **exponentially**, making later Paragon levels harder.
-        -- Lower values (e.g., 1.1) make Paragon leveling easier by reducing XP growth.
+        expMax = 400, -- Base XP required for the first Paragon level.
+        expScalingExponent = 1.2, -- Power-law exponent used to scale XP requirements as Paragon level increases.
+        -- 1.0 produces linear growth
+        -- Higher values make later levels scale more aggressively.
+        -- Lower values produce a gentler progression curve.
         groupXpPenaltyStep = 0.1, -- % XP diminishing returns per extra group member (default 10%)
 
-        fullXpRange = 5, -- Full XP is granted if the enemy is within this level range (±5 levels).
-        halfXpRange = 10, -- Half XP is granted if the enemy is within this level range (±10 levels).
-        halfXpMultiplier = 0.5, -- XP is reduced to 50% when enemy is within `halfXpRange`.
-        quarterXpRange = 15, -- Quarter XP is granted if the enemy is within this level range (±15 levels).
-        quarterXpMultiplier = 0.25, -- XP is reduced to 25% when enemy is within `quarterXpRange`.
+        fullXpRange = 5, -- Full XP if the enemy is no more than 5 levels below the player.
+        halfXpRange = 10, -- 50% XP if the enemy is 6-10 levels below the player.
+        halfXpMultiplier = 0.5,
+        quarterXpRange = 15, -- 25% XP if the enemy is 11-15 levels below the player. More than 15 levels below grants no XP.
+        quarterXpMultiplier = 0.25,
 
         showXPGainedMessages = true, -- Set to true to show XP gained messages, false to disable it.
         showTalentNotifications = true, -- Set to true to show talent point earned messages, false to disable it.
@@ -42,6 +43,7 @@ local paragon = {
 
 local paragon_addon = AIO.AddHandlers("AIO_Paragon", {})
 paragon.account = {}
+paragon.accountLoaded = {}
 
 local HAS_PLAYERBOTS = type(GetPlayerbotsMgr) == "function"
 
@@ -51,7 +53,6 @@ local function ShouldSkipBot(player)
 end
 
 function paragon_addon.sendInformations(msg, player)
-    local pGuid = player:GetGUIDLow()
     local pAcc = player:GetAccountId()
 
     local temp = {
@@ -113,11 +114,12 @@ end
 
 
 function paragon_addon.setStatsInformation(player, stat, value, flags)
-    -- -- Always clamp value to 1 for individual clicks (wheel and middle click will override this)
-    -- value = math.min(1, value or 1)
+    stat = tonumber(stat)
+    if not stat or not paragon.spells[stat] then return end
 
     -- Clamp value between 1 and 10 since middle click can adjust it by 10
-    value = math.max(1, math.min(value or 1, 10))
+    value = tonumber(value) or 1
+    value = math.max(1, math.min(value, 10))
 
     if player:IsInCombat() then
         player:SendNotification("You can't do this in combat.")
@@ -159,6 +161,7 @@ function paragon_addon.setStatsInformation(player, stat, value, flags)
     end
 
     -- Sync updated state to client
+    paragon_addon.setStats(player)
     paragon.setAddonInfo(player)
 end
 
@@ -188,14 +191,18 @@ function paragon.onLogin(event, player)
         }
     end
 
-    -- Load Paragon account-level data from DB
-    local getparagonAccInfo = AuthDBQuery(string.format("SELECT level, exp FROM `%s`.`paragon_account` WHERE account_id = %d", paragon.config.db_name, pAcc))
-    if getparagonAccInfo then
-        paragon.account[pAcc].level = getparagonAccInfo:GetUInt32(0)
-        paragon.account[pAcc].exp = getparagonAccInfo:GetUInt32(1)
-        paragon.updateExpMax(pAcc)
-    else
-        AuthDBExecute(string.format("INSERT INTO `%s`.`paragon_account` VALUES (%d, 1, 0)", paragon.config.db_name, pAcc))
+    -- Load account-level Paragon data only once per account.
+    if not paragon.accountLoaded[pAcc] then
+        local getparagonAccInfo = CharDBQuery(string.format("SELECT level, exp FROM `%s`.`paragon_account` WHERE account_id = %d", paragon.config.db_name, pAcc))
+        if getparagonAccInfo then
+            paragon.account[pAcc].level = getparagonAccInfo:GetUInt32(0)
+            paragon.account[pAcc].exp = getparagonAccInfo:GetUInt32(1)
+            paragon.updateExpMax(pAcc)
+        else
+            CharDBExecute(string.format("INSERT INTO `%s`.`paragon_account` VALUES (%d, 1, 0)", paragon.config.db_name, pAcc))
+        end
+
+        paragon.accountLoaded[pAcc] = true
     end
 
     -- Load character-specific stat allocations
@@ -263,7 +270,7 @@ function paragon.onLogout(event, player)
     end
 
     local level, exp = paragon.account[pAcc].level, paragon.account[pAcc].exp
-    AuthDBExecute(string.format("REPLACE INTO `%s`.`paragon_account` VALUES (%d, %d, %d)", paragon.config.db_name, pAcc, level, exp))
+    CharDBExecute(string.format("REPLACE INTO `%s`.`paragon_account` VALUES (%d, %d, %d)", paragon.config.db_name, pAcc, level, exp))
 end
 RegisterPlayerEvent(4, paragon.onLogout)
 
@@ -304,10 +311,10 @@ end
 
 function paragon.setExp(player, victim, numMembers)
     local pLevel = player:GetLevel()
+    if pLevel < paragon.config.minPlayerLevel then return end
     local vLevel = victim:GetLevel()
     local pAcc = player:GetAccountId()
 
-    local levelDiff = pLevel - vLevel
     local xpGain = 0
 
     local creature = victim:ToCreature()
@@ -331,12 +338,17 @@ function paragon.setExp(player, victim, numMembers)
 
     if xpGain <= 0 then return end  -- Exit early if no XP
 
-    if levelDiff > 0 then  -- Only reduce XP if the enemy is lower level
-        if levelDiff > paragon.config.quarterXpRange then return end -- Enemy too weak, no XP
-        if levelDiff > paragon.config.halfXpRange then xpGain = math.floor(xpGain * paragon.config.quarterXpMultiplier) end
-        if levelDiff > paragon.config.fullXpRange then xpGain = math.floor(xpGain * paragon.config.halfXpMultiplier) end
+    local levelDiff = pLevel - vLevel
+    if levelDiff > 0 then -- Only reduce XP if the enemy is lower level
+        if levelDiff > paragon.config.quarterXpRange then
+            return -- Enemy too weak, no XP
+        elseif levelDiff > paragon.config.halfXpRange then
+            xpGain = math.floor(xpGain * paragon.config.quarterXpMultiplier)
+        elseif levelDiff > paragon.config.fullXpRange then
+            xpGain = math.floor(xpGain * paragon.config.halfXpMultiplier)
+        end
     end
-        
+
     -- Diminishing returns for group members
     local groupPenalty = 1 - (math.min((numMembers or 1) - 1, 4) * paragon.config.groupXpPenaltyStep)
     local adjustedXP = math.floor(xpGain * groupPenalty)
@@ -347,33 +359,31 @@ function paragon.setExp(player, victim, numMembers)
 
     paragon.account[pAcc].exp = paragon.account[pAcc].exp + adjustedXP
 
-    paragon.setAddonInfo(player)
-
     -- If the XP exceeds the max, be sure to carry over any excess XP to the next level
-    if paragon.account[pAcc].exp >= paragon.account[pAcc].exp_max then
-        local levelUps = math.floor(paragon.account[pAcc].exp / paragon.account[pAcc].exp_max)
-        local carryOverXP = paragon.account[pAcc].exp % paragon.account[pAcc].exp_max
-        player:SetparagonLevel(levelUps, carryOverXP)
-    end    
+    -- Process level ups one at a time because the XP requirement changes each level.
+    while paragon.account[pAcc].exp >= paragon.account[pAcc].exp_max do
+        local carryOverXP = paragon.account[pAcc].exp - paragon.account[pAcc].exp_max
+        player:SetparagonLevel(1, carryOverXP)
+    end
+
+    paragon.setAddonInfo(player)
 end
 
 
 function paragon.onKillCreatureOrPlayer(event, player, victim)
-    local pLevel = player:GetLevel()
-    if (pLevel >= paragon.config.minPlayerLevel) then
-        local pGroup = player:GetGroup()
-        if pGroup then
-            local members = pGroup:GetMembers()
-            local numMembers = #members
-            for _, groupMember in pairs(members) do
-                if not ShouldSkipBot(groupMember) then
-                    paragon.setExp(groupMember, victim, numMembers)
-                end
+    local pGroup = player:GetGroup()
+    if pGroup then
+        local members = pGroup:GetMembers()
+        local numMembers = #members
+
+        for _, groupMember in pairs(members) do
+            if not ShouldSkipBot(groupMember) then
+                paragon.setExp(groupMember, victim, numMembers)
             end
-        else
-            if not ShouldSkipBot(player) then
-                paragon.setExp(player, victim, 1)
-            end
+        end
+    else
+        if not ShouldSkipBot(player) then
+            paragon.setExp(player, victim, 1)
         end
     end
 end
@@ -381,11 +391,11 @@ RegisterPlayerEvent(6, paragon.onKillCreatureOrPlayer)
 RegisterPlayerEvent(7, paragon.onKillCreatureOrPlayer)
 
 
-function Player:SetparagonLevel(level, carryOverXP)
+function Player:SetparagonLevel(levelsGained, carryOverXP)
     local pAcc = self:GetAccountId()
     if(pAcc ~= nil) then
         -- Increment the Paragon level
-        paragon.account[pAcc].level = paragon.account[pAcc].level + level
+        paragon.account[pAcc].level = paragon.account[pAcc].level + levelsGained
         paragon.account[pAcc].exp = carryOverXP
         paragon.updateExpMax(pAcc)
 
@@ -396,15 +406,13 @@ function Player:SetparagonLevel(level, carryOverXP)
 
         -- Grant talent points based on config settings
         if paragon.config.grantTalentPoints and (paragon.account[pAcc].level % paragon.config.talentInterval == 0) then
-            local newTalentPoints = paragon.config.talentsPerLevel * level
+            local newTalentPoints = paragon.config.talentsPerLevel * levelsGained
             self:SetFreeTalentPoints(self:GetFreeTalentPoints() + newTalentPoints)
             
             if paragon.config.showTalentNotifications then
                 self:SendBroadcastMessage("|CFF00A2FFYou have earned a new talent point from Paragon!|r")
             end
         end
-
-        paragon.setAddonInfo(self)
     end
 
     -- Visual/Notification effect
@@ -417,6 +425,6 @@ end
 function paragon.updateExpMax(pAcc)
     if paragon.account[pAcc] then
         local level = math.max(1, paragon.account[pAcc].level)
-        paragon.account[pAcc].exp_max = math.floor(paragon.config.expMax * (level ^ paragon.config.expScalingFactor))
+        paragon.account[pAcc].exp_max = math.floor(paragon.config.expMax * (level ^ paragon.config.expScalingExponent))
     end
 end
